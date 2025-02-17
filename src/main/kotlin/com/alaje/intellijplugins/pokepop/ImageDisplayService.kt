@@ -2,6 +2,7 @@ package com.alaje.intellijplugins.pokepop
 
 import com.alaje.intellijplugins.pokepop.image.ImageIconIterator
 import com.alaje.intellijplugins.pokepop.image.PokemonImageLoader
+import com.alaje.intellijplugins.pokepop.utils.ImageUtil.scaleImageIcon
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.ui.popup.Balloon
@@ -11,6 +12,7 @@ import com.intellij.ui.awt.RelativePoint
 import kotlinx.coroutines.*
 import java.awt.*
 import javax.swing.*
+import kotlin.random.Random
 
 
 @Service
@@ -33,8 +35,6 @@ class ImageDisplayService(
     coroutineScope.launch(Dispatchers.EDT) {
       while(isActive) {
         delay(timeInMillis)
-        val imageHeight = 150
-        val imageWidth = 150
         val transparentJBColor = JBColor(Color(0, 0, 0, 0), Color(0, 0, 0, 0))
 
         val imageIcon: ImageIcon? = if (imageIconIterator.hasNext()) {
@@ -43,28 +43,54 @@ class ImageDisplayService(
           imageIconIterator.restart().next()
         }
 
-        val scaledImage = ImageIcon(imageIcon?.image?.getScaledInstance(imageWidth, imageHeight, 0))
+        if (imageIcon == null) return@launch
+
+        val scaledImage = scaleImageIcon(imageIcon)
 
         val label = JLabel(scaledImage)
         label.isOpaque = false
-        label.setBounds(100, 100, imageWidth, imageHeight)
+        label.setBounds(100, 100, scaledImage.iconWidth, scaledImage.iconHeight)
 
-        val balloon = JBPopupFactory.getInstance()
-          .createBalloonBuilder(label)
-          .setFillColor(transparentJBColor)
-          .setBorderColor(transparentJBColor)
-          .setShadow(false)
-          .setFadeoutTime(fadeoutTime) // Auto-close after 5 seconds
-          .createBalloon()
+        displayImage(label, transparentJBColor)
 
-        balloon.show(
-          RelativePoint.fromScreen(Point(100, 100)),
-          Balloon.Position.below
-        )
       }
 
     }
   }
+
+  private fun displayImage(label: JLabel, transparentJBColor: JBColor) {
+    val balloon = JBPopupFactory.getInstance()
+      .createBalloonBuilder(label)
+      .setFillColor(transparentJBColor)
+      .setBorderColor(transparentJBColor)
+      .setShadow(false)
+      .setClickHandler(
+        {
+          // TODO: Do something
+        },
+        true
+      )
+      .setHideOnKeyOutside(false)
+      .setHideOnClickOutside(false)
+      .setHideOnFrameResize(false)
+      .setFadeoutTime(FADEOUT_TIME)
+      .createBalloon()
+
+    val toolkitScreenSize = Toolkit.getDefaultToolkit().screenSize
+    val maxWidth = toolkitScreenSize.width
+    val maxHeight = toolkitScreenSize.height;
+
+    val randPositionX = Random.nextInt(0, maxWidth)
+    val randPositionY = Random.nextInt(0, maxHeight)
+
+    balloon.show(
+      RelativePoint.fromScreen(
+        Point(randPositionX, randPositionY)
+      ),
+      Balloon.Position.atRight
+    )
+  }
 }
 
-private const val fadeoutTime = 4000L
+
+private const val FADEOUT_TIME = 4000L
