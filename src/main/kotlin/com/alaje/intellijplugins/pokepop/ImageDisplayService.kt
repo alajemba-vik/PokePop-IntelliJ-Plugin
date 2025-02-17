@@ -1,38 +1,49 @@
 package com.alaje.intellijplugins.pokepop
 
+import com.alaje.intellijplugins.pokepop.image.ImageIconIterator
+import com.alaje.intellijplugins.pokepop.image.PokemonImageLoader
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.project.DumbAware
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.JBColor
 import com.intellij.ui.awt.RelativePoint
-import com.intellij.util.application
 import kotlinx.coroutines.*
 import java.awt.*
-import java.net.URL
 import javax.swing.*
 
 
 @Service
-class PokemonDisplayService(
+class ImageDisplayService(
   private val coroutineScope: CoroutineScope
 )  {
+
+  private val pokemonImageLoader by lazy{ PokemonImageLoader() }
+  private val imageIconIterator by lazy {
+    ImageIconIterator(pokemonImageLoader.loadImages())
+  }
+
   fun showPopup(timeInMillis: Long) {
+    if (pokemonImageLoader.isLoaded && pokemonImageLoader.pokemonImagePaths.isEmpty()) {
+      System.err.println("No images found")
+      // TODO: Show toast telling user there are no images to display
+      return
+    }
+
     coroutineScope.launch(Dispatchers.EDT) {
       while(isActive) {
         delay(timeInMillis)
         val imageHeight = 150
         val imageWidth = 150
-        val transparentColor = Color(0, 0, 0, 0)
-        val transparentJBColor = JBColor(transparentColor, transparentColor)
+        val transparentJBColor = JBColor(Color(0, 0, 0, 0), Color(0, 0, 0, 0))
 
+        val imageIcon: ImageIcon? = if (imageIconIterator.hasNext()) {
+          imageIconIterator.next()
+        } else {
+          imageIconIterator.restart().next()
+        }
 
-        val image = createImageIcon("/pokemon.gif", null)
-
-        val scaledImage = ImageIcon(image?.image?.getScaledInstance(imageWidth, imageHeight, 0))
+        val scaledImage = ImageIcon(imageIcon?.image?.getScaledInstance(imageWidth, imageHeight, 0))
 
         val label = JLabel(scaledImage)
         label.isOpaque = false
@@ -53,32 +64,6 @@ class PokemonDisplayService(
       }
 
     }
-  }
-}
-
-class PokemonDisplayPostStartupActivity: ProjectActivity, DumbAware {
-  override suspend fun execute(project: Project) {
-    val service = application.getService(PokemonDisplayService::class.java)
-
-    val time = 5000L//300_000L // for 5 mins
-    service.showPopup(time)
-  }
-
-}
-
-
-fun createImageIcon(
-  path: String,
-  description: String?
-): ImageIcon? {
-  val imgURL: URL? = PokemonDisplayService::class.java.getResource(path)
-
-  return if (imgURL != null) {
-    println("Found file: $path")
-    ImageIcon(imgURL, description)
-  } else {
-    System.err.println("Couldn't find file: $path")
-    null
   }
 }
 

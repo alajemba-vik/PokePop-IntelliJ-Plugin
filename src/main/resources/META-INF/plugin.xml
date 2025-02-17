@@ -26,6 +26,6 @@
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
   <extensions defaultExtensionNs="com.intellij">
 
-    <postStartupActivity implementation="com.alaje.intellijplugins.pokepop.PokemonDisplayPostStartupActivity"/>
+    <postStartupActivity implementation="com.alaje.intellijplugins.pokepop.PostStartupActivity"/>
   </extensions>
 </idea-plugin>
