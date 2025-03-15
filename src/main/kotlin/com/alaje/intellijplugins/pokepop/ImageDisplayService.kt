@@ -25,7 +25,7 @@ class ImageDisplayService(
     ImageIconIterator(pokemonImageLoader.loadImages())
   }
 
-  fun showPopup(timeInMillis: Long) {
+  fun showPopup(delayTime: Long, displayDuration: Long) {
     if (pokemonImageLoader.isLoaded && pokemonImageLoader.pokemonImagePaths.isEmpty()) {
       System.err.println("No images found")
       // TODO: Show toast telling user there are no images to display
@@ -34,7 +34,8 @@ class ImageDisplayService(
 
     coroutineScope.launch(Dispatchers.EDT) {
       while(isActive) {
-        delay(timeInMillis)
+        delay(delayTime)
+
         val transparentJBColor = JBColor(Color(0, 0, 0, 0), Color(0, 0, 0, 0))
 
         val imageIcon: ImageIcon? = if (imageIconIterator.hasNext()) {
@@ -51,14 +52,18 @@ class ImageDisplayService(
         label.isOpaque = false
         label.setBounds(100, 100, scaledImage.iconWidth, scaledImage.iconHeight)
 
-        displayImage(label, transparentJBColor)
+        displayImage(label, transparentJBColor, displayDuration)
 
       }
 
     }
   }
 
-  private fun displayImage(label: JLabel, transparentJBColor: JBColor) {
+  private fun displayImage(
+    label: JLabel, 
+    transparentJBColor: JBColor,
+    displayDuration: Long
+    ) {
     val balloon = JBPopupFactory.getInstance()
       .createBalloonBuilder(label)
       .setFillColor(transparentJBColor)
@@ -73,7 +78,7 @@ class ImageDisplayService(
       .setHideOnKeyOutside(false)
       .setHideOnClickOutside(false)
       .setHideOnFrameResize(false)
-      .setFadeoutTime(FADEOUT_TIME)
+      .setFadeoutTime(displayDuration)
       .createBalloon()
 
     val toolkitScreenSize = Toolkit.getDefaultToolkit().screenSize
@@ -91,6 +96,3 @@ class ImageDisplayService(
     )
   }
 }
-
-
-private const val FADEOUT_TIME = 4000L

@@ -27,5 +27,11 @@
   <extensions defaultExtensionNs="com.intellij">
 
     <postStartupActivity implementation="com.alaje.intellijplugins.pokepop.PostStartupActivity"/>
+    <applicationConfigurable
+      parentId="tools"
+      instance="com.alaje.intellijplugins.pokepop.settings.ApplicationSettingsConfigurable"
+      id="com.alaje.intellijplugins.pokepop.settings.ApplicationSettingsConfigurable"
+      displayName="Pokepop"
+      />
   </extensions>
 </idea-plugin>
