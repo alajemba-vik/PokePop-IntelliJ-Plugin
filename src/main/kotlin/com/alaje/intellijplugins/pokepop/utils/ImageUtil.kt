@@ -12,7 +12,6 @@ object ImageUtil {
             val imgURL: URL? = ImageDisplayService::class.java.getResource(path)
 
         return if (imgURL != null) {
-            println("Found file: $path")
             ImageIcon(imgURL, description)
         } else {
             System.err.println("Couldn't find file: $path")
