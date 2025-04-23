@@ -27,11 +27,20 @@
   <extensions defaultExtensionNs="com.intellij">
 
     <postStartupActivity implementation="com.alaje.intellijplugins.pokepop.PostStartupActivity"/>
+
     <applicationConfigurable
       parentId="tools"
       instance="com.alaje.intellijplugins.pokepop.settings.ApplicationSettingsConfigurable"
       id="com.alaje.intellijplugins.pokepop.settings.ApplicationSettingsConfigurable"
-      displayName="Pokepop"
-      />
+      displayName="Pokepop"/>
+
+    <statusBarWidgetFactory
+            implementation="com.alaje.intellijplugins.pokepop.status_bar.PokepopStatusBarWidgetFactory"
+            id="com.alaje.intellijplugins.pokepop.status_bar.PokepopStatusBarWidgetFactory"/>
+
+    <notificationGroup
+            id="General Status Update"
+            displayType="BALLOON"/>
+
   </extensions>
 </idea-plugin>

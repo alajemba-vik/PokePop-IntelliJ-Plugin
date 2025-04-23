@@ -2,6 +2,7 @@ package com.alaje.intellijplugins.pokepop
 
 import com.alaje.intellijplugins.pokepop.image.ImageIconIterator
 import com.alaje.intellijplugins.pokepop.image.PokemonImageLoader
+import com.alaje.intellijplugins.pokepop.settings.ApplicationSettings
 import com.alaje.intellijplugins.pokepop.utils.ImageUtil.scaleImageIcon
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
@@ -9,9 +10,13 @@ import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.JBColor
 import com.intellij.ui.awt.RelativePoint
+import com.intellij.util.application
 import kotlinx.coroutines.*
-import java.awt.*
-import javax.swing.*
+import java.awt.Color
+import java.awt.Point
+import java.awt.Toolkit
+import javax.swing.ImageIcon
+import javax.swing.JLabel
 import kotlin.random.Random
 
 
@@ -20,24 +25,30 @@ class ImageDisplayService(
   private val coroutineScope: CoroutineScope
 )  {
 
+  private var job: Job? = null
   private val pokemonImageLoader by lazy{ PokemonImageLoader() }
   private val imageIconIterator by lazy {
     ImageIconIterator(pokemonImageLoader.loadImages())
   }
 
-  fun showPopup(delayTime: Long, displayDuration: Long) {
+  private val toolkitScreenSize get() = Toolkit.getDefaultToolkit().screenSize
+  private val maxWidth get() = toolkitScreenSize.width
+  private val maxHeight get() = toolkitScreenSize.height;
+
+  fun showPopup() {
+    val applicationSettings = application.getService(ApplicationSettings::class.java)
+
+    val delayTime = applicationSettings.state.delayTime
+    val displayDuration = applicationSettings.state.displayDuration
+
     if (pokemonImageLoader.isLoaded && pokemonImageLoader.pokemonImagePaths.isEmpty()) {
       System.err.println("No images found")
       // TODO: Show toast telling user there are no images to display
       return
     }
 
-    coroutineScope.launch(Dispatchers.EDT) {
+    job = coroutineScope.launch(Dispatchers.EDT) {
       while(isActive) {
-        delay(delayTime)
-
-        val transparentJBColor = JBColor(Color(0, 0, 0, 0), Color(0, 0, 0, 0))
-
         val imageIcon: ImageIcon? = if (imageIconIterator.hasNext()) {
           imageIconIterator.next()
         } else {
@@ -52,16 +63,21 @@ class ImageDisplayService(
         label.isOpaque = false
         label.setBounds(100, 100, scaledImage.iconWidth, scaledImage.iconHeight)
 
-        displayImage(label, transparentJBColor, displayDuration)
+        displayImage(label, displayDuration)
 
+        delay(delayTime)
       }
 
     }
   }
 
+  fun cancelPopup() {
+    job?.cancel()
+    job = null
+  }
+
   private fun displayImage(
     label: JLabel, 
-    transparentJBColor: JBColor,
     displayDuration: Long
     ) {
     val balloon = JBPopupFactory.getInstance()
@@ -81,10 +97,6 @@ class ImageDisplayService(
       .setFadeoutTime(displayDuration)
       .createBalloon()
 
-    val toolkitScreenSize = Toolkit.getDefaultToolkit().screenSize
-    val maxWidth = toolkitScreenSize.width
-    val maxHeight = toolkitScreenSize.height;
-
     val randPositionX = Random.nextInt(0, maxWidth)
     val randPositionY = Random.nextInt(0, maxHeight)
 
@@ -95,4 +107,11 @@ class ImageDisplayService(
       Balloon.Position.atRight
     )
   }
+
+  companion object {
+    val service get(): ImageDisplayService = application.getService(ImageDisplayService::class.java)
+  }
 }
+
+private val transparentJBColor = JBColor(Color(0, 0, 0, 0), Color(0, 0, 0, 0))
+
