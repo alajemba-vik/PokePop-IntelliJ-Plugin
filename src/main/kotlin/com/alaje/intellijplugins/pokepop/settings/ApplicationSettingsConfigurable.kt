@@ -10,7 +10,7 @@ import javax.swing.JComponent
  */
 class ApplicationSettingsConfigurable: Configurable {
     private var settingsComponent: ApplicationSettingsView? = null
-    private val applicationSettings get() = ApplicationSettings.getInstance()
+    private val applicationSettings get() = ApplicationSettings.settings
 
     private val state get() = applicationSettings.state
 
@@ -22,10 +22,13 @@ class ApplicationSettingsConfigurable: Configurable {
     override fun isModified(): Boolean {
         val newDisplayDuration = settingsComponent?.displayDurationText?.toLongOrNull()
         val newDelayTime = settingsComponent?.delayTimeText?.toLongOrNull()
+        val newEnablePokePop = settingsComponent?.enablePokePopValue
 
         return newDisplayDuration != null &&
                 newDelayTime != null &&
-                (newDisplayDuration != state.displayDuration || newDelayTime != state.delayTime)
+                (newDisplayDuration != state.displayDuration ||
+                        newDelayTime != state.delayTime ||
+                        newEnablePokePop != state.isPokePopEnabled)
 
     }
 
@@ -33,7 +36,8 @@ class ApplicationSettingsConfigurable: Configurable {
         // save user input to persistent state
         state.updateState(
             settingsComponent?.displayDurationText?.toLongOrNull(),
-            settingsComponent?.delayTimeText?.toLongOrNull()
+            settingsComponent?.delayTimeText?.toLongOrNull(),
+            settingsComponent?.enablePokePopValue
         )
     }
 
@@ -41,6 +45,7 @@ class ApplicationSettingsConfigurable: Configurable {
         // reset UI to match persistent state
         settingsComponent?.displayDurationText = state.displayDuration.toString()
         settingsComponent?.delayTimeText = state.delayTime.toString()
+        settingsComponent?.enablePokePopValue = state.isPokePopEnabled
     }
 
     override fun disposeUIResources() {

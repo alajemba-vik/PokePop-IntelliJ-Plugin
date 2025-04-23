@@ -32,25 +32,28 @@ class ApplicationSettings: PersistentStateComponent<ApplicationSettings.State>{
     }
 
     companion object {
-        fun getInstance(): ApplicationSettings {
+        val settings get(): ApplicationSettings {
             return ApplicationManager.getApplication().getService(ApplicationSettings::class.java)
         }
     }
 
     class State(
         var displayDuration: Long = DEFAULT_DISPLAY_DURATION, // How long each image stays on the screen (in milliseconds)
-        var delayTime: Long = DEFAULT_DELAY_TIME // How long to wait before showing the next image (in milliseconds)
+        var delayTime: Long = DEFAULT_DELAY_TIME, // How long to wait before showing the next image (in milliseconds)
+        var isPokePopEnabled: Boolean = true
     ) {
         /**
          * Updates the state with the new values.
          * Passing null will keep the current value.
          */
         fun updateState(
-            displayDuration: Long?,
-            delayTime: Long?
+            displayDuration: Long? = null,
+            delayTime: Long? = null,
+            isPokePopEnabled: Boolean? = null
         ) {
             if (displayDuration != null) this.displayDuration = displayDuration
             if (delayTime != null) this.delayTime = delayTime
+            if (isPokePopEnabled != null) this.isPokePopEnabled = isPokePopEnabled
         }
     }
 

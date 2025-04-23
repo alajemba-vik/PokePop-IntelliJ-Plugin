@@ -1,5 +1,6 @@
 package com.alaje.intellijplugins.pokepop.settings
 
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.BottomGap
 import com.intellij.ui.dsl.builder.Cell
@@ -20,22 +21,36 @@ class ApplicationSettingsView {
 
     private lateinit var displayDurationTextField: Cell<JBTextField>
     private lateinit var delayTimeTextField: Cell<JBTextField>
+    private lateinit var enablePokePop:  Cell<JBCheckBox>
 
     var displayDurationText: String
         get() = displayDurationTextField.component.text
         set(value) {
             displayDurationTextField.text(value)
         }
+
     var delayTimeText: String
         get() = delayTimeTextField.component.text
         set(value) {
             delayTimeTextField.text(value)
         }
 
+    var enablePokePopValue: Boolean
+        get() = enablePokePop.component.isSelected
+        set(value) {
+            enablePokePop.component.isSelected = value
+        }
+
     init {
         mainPanel = FormBuilder.createFormBuilder()
             .addComponent(
                 panel {
+                    row {
+                        enablePokePop = checkBox("""Distract me with cuteness""").apply {
+                            this.enabled(true)
+                        }
+                    }
+
                     row("Display Duration (ms):") {
                         displayDurationTextField = textField()
                     }.bottomGap(BottomGap.SMALL)
@@ -47,9 +62,13 @@ class ApplicationSettingsView {
                     row {
                         comment(
                             """
-                            New durations will be applied to the IDE after restart.\n
+                            New durations will be applied to the IDE after restart.
+                            """.trimIndent()
+                        )
+                        comment(
+                            """
                             Not supplying a valid value will result in the use of the last value provided.
-                            .""".trimIndent()
+                            """.trimIndent()
                         )
                     }
                 }
