@@ -4,8 +4,11 @@ import com.alaje.intellijplugins.pokepop.image.ImageIconIterator
 import com.alaje.intellijplugins.pokepop.image.PokemonImageLoader
 import com.alaje.intellijplugins.pokepop.settings.ApplicationSettings
 import com.alaje.intellijplugins.pokepop.utils.ImageUtil.scaleImageIcon
+import com.alaje.intellijplugins.pokepop.utils.NotificationsUtil
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.JBColor
@@ -35,15 +38,24 @@ class ImageDisplayService(
   private val maxWidth get() = toolkitScreenSize.width
   private val maxHeight get() = toolkitScreenSize.height;
 
-  fun showPopup() {
+  fun showPopup(project: Project) {
     val applicationSettings = application.getService(ApplicationSettings::class.java)
 
     val delayTime = applicationSettings.state.delayTime
     val displayDuration = applicationSettings.state.displayDuration
+    val isPokePopEnabled = applicationSettings.state.isPokePopEnabled
 
-    if (pokemonImageLoader.isLoaded && pokemonImageLoader.pokemonImagePaths.isEmpty()) {
-      System.err.println("No images found")
-      // TODO: Show toast telling user there are no images to display
+    val hasNoImages = pokemonImageLoader.isLoaded && pokemonImageLoader.pokemonImagePaths.isEmpty()
+
+    if (hasNoImages || !isPokePopEnabled) {
+      if (hasNoImages) {
+        NotificationsUtil.showNotification(
+          "No images found for Pokepop",
+          project,
+          NotificationType.ERROR
+        )
+      }
+
       return
     }
 

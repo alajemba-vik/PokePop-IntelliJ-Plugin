@@ -2,10 +2,9 @@ package com.alaje.intellijplugins.pokepop.status_bar
 
 import com.alaje.intellijplugins.pokepop.ImageDisplayService
 import com.alaje.intellijplugins.pokepop.settings.ApplicationSettings
+import com.alaje.intellijplugins.pokepop.utils.NotificationsUtil
 import com.intellij.icons.AllIcons
 import com.intellij.notification.Notification
-import com.intellij.notification.NotificationGroupManager
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
@@ -32,29 +31,26 @@ class PokepopStatusBarWidget(
     }
 
     private val appSettings = ApplicationSettings.settings
-    private val isPaused: Boolean get() = appSettings.state.isPokePopEnabled
+    private val isPokePopEnabled: Boolean get() = appSettings.state.isPokePopEnabled
 
     override fun ID(): String = ID
 
     override fun getPresentation(): StatusBarWidget.WidgetPresentation = this
 
-    override fun getIcon(): Icon? {
+    override fun getIcon(): Icon {
 
-        return if (!appSettings.state.isPokePopEnabled) {
-            // If Pokepop is turned off, return null
-            null
-        } else if (isPaused) {
-            AllIcons.Process.ProgressResume
-        } else {
+        return if (isPokePopEnabled) {
             AllIcons.Process.ProgressPause
+        } else {
+            AllIcons.Process.ProgressResume
         }
     }
 
     override fun getTooltipText(): String {
-        return if (isPaused) {
-            "Resume Pokepop"
-        } else {
+        return if (isPokePopEnabled) {
             "Pause Pokepop"
+        } else {
+            "Resume Pokepop"
         }
     }
 
@@ -66,36 +62,40 @@ class PokepopStatusBarWidget(
         return Consumer<MouseEvent> { mouseEvent ->
 
             appSettings.state.isPokePopEnabled = !appSettings.state.isPokePopEnabled
-            val message = if (isPaused) "Pokepop paused" else "Pokepop resumed"
+            val message = if (isPokePopEnabled) "Pokepop resumed" else "Pokepop paused"
 
             // Update the icon
             statusBar?.updateWidget(ID)
 
             // Show a toast informing the user of the change
-            notification?.expire()
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("General Status Update")
-                .createNotification(message, NotificationType.INFORMATION)
-                .apply {
-                    notification = this
-                    coroutineScope.launch {
-                        delay(3000)
-                        expire()
-                    }
-                }
-                .notify(project)
-            notification?.whenExpired {
-                notification = null
-            }
+            manageNotification(message)
 
             // Show or cancel the service
             ImageDisplayService.service.apply {
-                if (isPaused) {
-                    cancelPopup()
+                if (isPokePopEnabled) {
+                    showPopup(project)
                 } else {
-                    showPopup()
+                    cancelPopup()
                 }
             }
+        }
+    }
+
+    private fun manageNotification(message: String) {
+        notification?.expire()
+
+        notification = NotificationsUtil.showNotification(
+            message,
+            project
+        )
+
+        coroutineScope.launch {
+            delay(3000)
+            notification?.expire()
+        }
+
+        notification?.whenExpired {
+            notification = null
         }
     }
 

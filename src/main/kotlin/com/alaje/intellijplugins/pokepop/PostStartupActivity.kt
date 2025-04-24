@@ -6,7 +6,7 @@ import com.intellij.openapi.startup.ProjectActivity
 
 class PostStartupActivity: ProjectActivity, DumbAware {
     override suspend fun execute(project: Project) {
-        ImageDisplayService.service.showPopup()
+        ImageDisplayService.service.showPopup(project)
     }
 
 }
