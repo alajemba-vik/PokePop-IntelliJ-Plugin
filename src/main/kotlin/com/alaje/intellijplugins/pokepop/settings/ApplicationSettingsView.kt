@@ -1,11 +1,9 @@
 package com.alaje.intellijplugins.pokepop.settings
 
+import com.intellij.ui.codeFloatingToolbar.DropdownActionGroup
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBTextField
-import com.intellij.ui.dsl.builder.BottomGap
-import com.intellij.ui.dsl.builder.Cell
-import com.intellij.ui.dsl.builder.panel
-import com.intellij.ui.dsl.builder.text
+import com.intellij.ui.dsl.builder.*
 import com.intellij.util.ui.FormBuilder
 import javax.swing.JComponent
 import javax.swing.JPanel
@@ -13,6 +11,7 @@ import javax.swing.JPanel
 /**
  * Defines UI to display and accept data for settings
  */
+@Suppress("DialogTitleCapitalization")
 class ApplicationSettingsView {
     var mainPanel : JPanel
         private set
@@ -51,22 +50,20 @@ class ApplicationSettingsView {
                         }
                     }
 
-                    row("Display Duration (ms):") {
-                        displayDurationTextField = textField()
+                    row("Display Duration:") {
+                        displayDurationTextField = textField().gap(RightGap.SMALL)
+                        label("milliseconds")
                     }.bottomGap(BottomGap.SMALL)
 
-                    row("Delay Duration (ms):") {
-                        delayTimeTextField = textField()
+                    row("Delay Duration:") {
+                        delayTimeTextField = textField().gap(RightGap.SMALL)
+                        label("milliseconds")
                     }.bottomGap(BottomGap.SMALL)
 
                     row {
                         comment(
                             """
                             New durations will be applied to the IDE after restart.
-                            """.trimIndent()
-                        )
-                        comment(
-                            """
                             Not supplying a valid value will result in the use of the last value provided.
                             """.trimIndent()
                         )
