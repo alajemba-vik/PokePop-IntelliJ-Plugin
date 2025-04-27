@@ -98,7 +98,7 @@ class ApplicationSettingsView {
                     row {
                         comment(
                             """
-                            Settings will be fully applied to the IDE after restart.
+                            Settings will be fully applied to the IDE after restarting the IDE or Pokepop.
                             """.trimIndent()
                         )
                     }.bottomGap(BottomGap.SMALL)
