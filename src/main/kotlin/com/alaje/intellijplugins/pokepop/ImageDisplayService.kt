@@ -5,6 +5,7 @@ import com.alaje.intellijplugins.pokepop.image.PokemonImageLoader
 import com.alaje.intellijplugins.pokepop.settings.ApplicationSettings
 import com.alaje.intellijplugins.pokepop.utils.ImageUtil.scaleImageIcon
 import com.alaje.intellijplugins.pokepop.utils.NotificationsUtil
+import com.alaje.intellijplugins.pokepop.utils.TimeUtil
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.Service
@@ -30,37 +31,35 @@ class ImageDisplayService(
 
   private var job: Job? = null
   private val pokemonImageLoader by lazy{ PokemonImageLoader() }
-  private val imageIconIterator by lazy {
-    ImageIconIterator(pokemonImageLoader.loadImages())
+  private val imageIconIterator by lazy { ImageIconIterator(pokemonImageLoader.loadImages()) }
+
+  private val applicationSettingsState by lazy { application.getService(ApplicationSettings::class.java).state }
+
+  private val isPokePopEnabled: Boolean get() {
+    return with(applicationSettingsState){
+      isPokePopEnabled && (TimeUtil.onlyCurrentTimeInMillis in startTimeInMillis..endTimeInMillis)
+    }
   }
 
   private val toolkitScreenSize get() = Toolkit.getDefaultToolkit().screenSize
   private val maxWidth get() = toolkitScreenSize.width
-  private val maxHeight get() = toolkitScreenSize.height;
+  private val maxHeight get() = toolkitScreenSize.height
 
   fun showPopup(project: Project) {
-    val applicationSettings = application.getService(ApplicationSettings::class.java)
-
-    val delayTime = applicationSettings.state.delayTime
-    val displayDuration = applicationSettings.state.displayDuration
-    val isPokePopEnabled = applicationSettings.state.isPokePopEnabled
 
     val hasNoImages = pokemonImageLoader.isLoaded && pokemonImageLoader.pokemonImagePaths.isEmpty()
 
-    if (hasNoImages || !isPokePopEnabled) {
-      if (hasNoImages) {
-        NotificationsUtil.showNotification(
-          "No images found for Pokepop",
-          project,
-          NotificationType.ERROR
-        )
-      }
-
+    if (hasNoImages) {
+      NotificationsUtil.showNotification(
+        "No images found for Pokepop",
+        project,
+        NotificationType.ERROR
+      )
       return
     }
 
     job = coroutineScope.launch(Dispatchers.EDT) {
-      while(isActive) {
+      while(isActive && isPokePopEnabled) {
         val imageIcon: ImageIcon? = if (imageIconIterator.hasNext()) {
           imageIconIterator.next()
         } else {
@@ -75,11 +74,10 @@ class ImageDisplayService(
         label.isOpaque = false
         label.setBounds(100, 100, scaledImage.iconWidth, scaledImage.iconHeight)
 
-        displayImage(label, displayDuration)
+        displayImage(label,applicationSettingsState.displayDurationInMillis)
 
-        delay(delayTime)
+        delay(applicationSettingsState.delayTimeInMillis)
       }
-
     }
   }
 

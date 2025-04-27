@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.tasks.BuildSearchableOptionsTask
+
 plugins {
   id("java")
   id("org.jetbrains.kotlin.jvm") version "1.9.25"
@@ -28,6 +30,12 @@ tasks {
   }
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "17"
+  }
+
+  withType<BuildSearchableOptionsTask>{
+    // disable during development to allow reloading plugin easily to view changes
+    val isInDevMode = System.getenv("IN_DEV").toBooleanStrictOrNull() ?: false
+    enabled = !isInDevMode
   }
 
   patchPluginXml {

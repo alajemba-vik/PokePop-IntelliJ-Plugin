@@ -20,32 +20,43 @@ class ApplicationSettingsConfigurable: Configurable {
     }
 
     override fun isModified(): Boolean {
-        val newDisplayDuration = settingsComponent?.displayDurationText?.toLongOrNull()
-        val newDelayTime = settingsComponent?.delayTimeText?.toLongOrNull()
+        val newDisplayDuration = settingsComponent?.displayDuration
+        val newDelayTime = settingsComponent?.delayTime
         val newEnablePokePop = settingsComponent?.enablePokePopValue
+        val newStartTime = settingsComponent?.startTimeText
+        val newEndTime = settingsComponent?.endTimeText
+
+        val isNewUpdate = newDisplayDuration != state.displayDurationInMillis ||
+                newDelayTime != state.delayTimeInMillis ||
+                newEnablePokePop != state.isPokePopEnabled ||
+                newStartTime != state.startTimeInMillis ||
+                newEndTime != state.endTimeInMillis
 
         return newDisplayDuration != null &&
                 newDelayTime != null &&
-                (newDisplayDuration != state.displayDuration ||
-                        newDelayTime != state.delayTime ||
-                        newEnablePokePop != state.isPokePopEnabled)
-
+                newStartTime != null &&
+                newEndTime != null &&
+                isNewUpdate
     }
 
     override fun apply() {
         // save user input to persistent state
         state.updateState(
-            settingsComponent?.displayDurationText?.toLongOrNull(),
-            settingsComponent?.delayTimeText?.toLongOrNull(),
-            settingsComponent?.enablePokePopValue
+            settingsComponent?.displayDuration,
+            settingsComponent?.delayTime,
+            settingsComponent?.enablePokePopValue,
+            startTime = settingsComponent?.startTimeText,
+            endTime = settingsComponent?.endTimeText
         )
     }
 
     override fun reset() {
         // reset UI to match persistent state
-        settingsComponent?.displayDurationText = state.displayDuration.toString()
-        settingsComponent?.delayTimeText = state.delayTime.toString()
+        settingsComponent?.displayDuration = state.displayDurationInMillis
+        settingsComponent?.delayTime = state.delayTimeInMillis
         settingsComponent?.enablePokePopValue = state.isPokePopEnabled
+        settingsComponent?.startTimeText = state.startTimeInMillis
+        settingsComponent?.endTimeText = state.endTimeInMillis
     }
 
     override fun disposeUIResources() {

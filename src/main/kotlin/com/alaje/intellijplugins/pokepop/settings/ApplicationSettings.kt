@@ -37,10 +37,21 @@ class ApplicationSettings: PersistentStateComponent<ApplicationSettings.State>{
         }
     }
 
+    /**
+     * Holds the state of the settings.
+     * This class is used to store the settings in a persistent way.
+     * @property displayDurationInMillis How long each image stays on the screen (in milliseconds)
+     * @property delayTimeInMillis How long to wait before showing the next image (in milliseconds)
+     * @property isPokePopEnabled Whether the PokePop feature is enabled or not
+     * @property startTimeInMillis Start time in milliseconds, only contains the time portion
+     * @property endTimeInMillis End time in milliseconds, only contains the time portion
+     */
     class State(
-        var displayDuration: Long = DEFAULT_DISPLAY_DURATION, // How long each image stays on the screen (in milliseconds)
-        var delayTime: Long = DEFAULT_DELAY_TIME, // How long to wait before showing the next image (in milliseconds)
-        var isPokePopEnabled: Boolean = true
+        var displayDurationInMillis: Long = DEFAULT_DISPLAY_DURATION,
+        var delayTimeInMillis: Long = DEFAULT_DELAY_TIME,
+        var isPokePopEnabled: Boolean = true,
+        var startTimeInMillis: Long = 0L,
+        var endTimeInMillis: Long = DEFAULT_END_TIME
     ) {
         /**
          * Updates the state with the new values.
@@ -49,11 +60,15 @@ class ApplicationSettings: PersistentStateComponent<ApplicationSettings.State>{
         fun updateState(
             displayDuration: Long? = null,
             delayTime: Long? = null,
-            isPokePopEnabled: Boolean? = null
+            isPokePopEnabled: Boolean? = null,
+            startTime: Long? = null,
+            endTime: Long? = null
         ) {
-            if (displayDuration != null) this.displayDuration = displayDuration
-            if (delayTime != null) this.delayTime = delayTime
+            if (displayDuration != null) this.displayDurationInMillis = displayDuration
+            if (delayTime != null) this.delayTimeInMillis = delayTime
             if (isPokePopEnabled != null) this.isPokePopEnabled = isPokePopEnabled
+            if (startTime != null) this.startTimeInMillis = startTime
+            if (endTime != null) this.endTimeInMillis = endTime
         }
     }
 
@@ -61,3 +76,4 @@ class ApplicationSettings: PersistentStateComponent<ApplicationSettings.State>{
 
 private const val DEFAULT_DISPLAY_DURATION = 4000L
 private const val DEFAULT_DELAY_TIME = 5000L
+private const val DEFAULT_END_TIME = 86_340_000L // 23:59:59 in milliseconds
