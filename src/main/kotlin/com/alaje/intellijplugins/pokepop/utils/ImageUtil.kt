@@ -19,20 +19,20 @@ object ImageUtil {
         }
     }
 
-    fun scaleImageIcon(imageIcon: ImageIcon): ImageIcon {
+    fun scaleImageIcon(imageIcon: ImageIcon, imageSizeInPx: Int): ImageIcon {
         var currentImageWidth = imageIcon.iconWidth
         var currentImageHeight = imageIcon.iconHeight
 
-        if (currentImageWidth > DEFAULT_IMAGE_SIZE || currentImageHeight > DEFAULT_IMAGE_SIZE) {
+        if (currentImageWidth > imageSizeInPx || currentImageHeight > imageSizeInPx) {
             // maintain aspect ratio
             val ratio = currentImageWidth.toFloat() / currentImageHeight.toFloat()
 
             if (currentImageWidth > currentImageHeight) {
-                currentImageWidth = DEFAULT_IMAGE_SIZE
-                currentImageHeight = (DEFAULT_IMAGE_SIZE / ratio).toInt()
+                currentImageWidth = imageSizeInPx
+                currentImageHeight = (imageSizeInPx / ratio).toInt()
             } else {
-                currentImageHeight = DEFAULT_IMAGE_SIZE
-                currentImageWidth = (DEFAULT_IMAGE_SIZE * ratio).toInt()
+                currentImageHeight = imageSizeInPx
+                currentImageWidth = (imageSizeInPx * ratio).toInt()
             }
 
         }
@@ -43,5 +43,3 @@ object ImageUtil {
         return scaledImage
     }
 }
-
-const val DEFAULT_IMAGE_SIZE = 150

@@ -68,7 +68,7 @@ class ImageDisplayService(
 
         if (imageIcon == null) return@launch
 
-        val scaledImage = scaleImageIcon(imageIcon)
+        val scaledImage = scaleImageIcon(imageIcon, applicationSettingsState.imageSizeInPx)
 
         val label = JLabel(scaledImage)
         label.isOpaque = false

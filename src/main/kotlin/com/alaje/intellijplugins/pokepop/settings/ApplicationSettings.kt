@@ -51,7 +51,8 @@ class ApplicationSettings: PersistentStateComponent<ApplicationSettings.State>{
         var delayTimeInMillis: Long = DEFAULT_DELAY_TIME,
         var isPokePopEnabled: Boolean = true,
         var startTimeInMillis: Long = 0L,
-        var endTimeInMillis: Long = DEFAULT_END_TIME
+        var endTimeInMillis: Long = DEFAULT_END_TIME,
+        var imageSizeInPx: Int = DEFAULT_IMAGE_SIZE
     ) {
         /**
          * Updates the state with the new values.
@@ -62,13 +63,15 @@ class ApplicationSettings: PersistentStateComponent<ApplicationSettings.State>{
             delayTime: Long? = null,
             isPokePopEnabled: Boolean? = null,
             startTime: Long? = null,
-            endTime: Long? = null
+            endTime: Long? = null,
+            imageSize: Int? = null
         ) {
             if (displayDuration != null) this.displayDurationInMillis = displayDuration
             if (delayTime != null) this.delayTimeInMillis = delayTime
             if (isPokePopEnabled != null) this.isPokePopEnabled = isPokePopEnabled
             if (startTime != null) this.startTimeInMillis = startTime
             if (endTime != null) this.endTimeInMillis = endTime
+            if (imageSize != null) this.imageSizeInPx = imageSize
         }
     }
 
@@ -77,3 +80,4 @@ class ApplicationSettings: PersistentStateComponent<ApplicationSettings.State>{
 private const val DEFAULT_DISPLAY_DURATION = 4000L
 private const val DEFAULT_DELAY_TIME = 5000L
 private const val DEFAULT_END_TIME = 86_340_000L // 23:59:59 in milliseconds
+private const val DEFAULT_IMAGE_SIZE = 150

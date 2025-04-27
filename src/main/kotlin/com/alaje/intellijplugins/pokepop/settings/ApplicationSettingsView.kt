@@ -12,6 +12,7 @@ import javax.swing.JPanel
 /**
  * Defines UI to display and accept data for settings
  */
+@Suppress("DialogTitleCapitalization")
 class ApplicationSettingsView {
     var mainPanel : JPanel
         private set
@@ -24,6 +25,8 @@ class ApplicationSettingsView {
 
     private lateinit var startTimeTextField: Cell<JBTextField>
     private lateinit var endTimeTextField: Cell<JBTextField>
+
+    private lateinit var imageSizeTextField: Cell<JBTextField>
 
     var displayDuration: Long?
         get() = displayDurationTextField.component.text?.toLongOrNull()
@@ -43,16 +46,22 @@ class ApplicationSettingsView {
             enablePokePop.component.isSelected = value
         }
 
-    var startTimeText: Long?
+    var startTime: Long?
         get()  = startTimeTextField.component.text.toMilliseconds()
         set(value) {
             startTimeTextField.text(value?.toTimeString() ?: "")
         }
 
-    var endTimeText: Long?
+    var endTime: Long?
         get() = endTimeTextField.component.text.toMilliseconds()
         set(value) {
             endTimeTextField.text(value?.toTimeString() ?: "")
+        }
+
+    var imageSize: Int?
+        get() = imageSizeTextField.component.text?.toIntOrNull()
+        set(value) {
+            imageSizeTextField.text(value?.toString() ?: "")
         }
 
     init {
@@ -64,35 +73,47 @@ class ApplicationSettingsView {
                             .apply { this.enabled(true) }
                     }
 
-                    row("Display Duration:") {
-                        displayDurationTextField = durationField()
-                    }.bottomGap(BottomGap.SMALL)
+                    group("Timing") {
+                        row("Display Duration:") {
+                            displayDurationTextField = durationField()
+                        }.bottomGap(BottomGap.SMALL)
 
-                    row("Delay Duration:") {
-                        delayTimeTextField = durationField()
-                    }.bottomGap(BottomGap.SMALL)
+                        row("Delay Duration:") {
+                            delayTimeTextField = durationField()
+                        }.bottomGap(BottomGap.SMALL)
+                    }
 
-                    row {
-                        // only show between [starting time] and [ending time]
-                        startTimeTextField = timeField(
-                            text = "00:00",
-                            label = "Only show between",
-                        )
+                    group("Schedule") {
+                        row {
+                            // only show between [starting time] and [ending time]
+                            startTimeTextField = timeField(
+                                text = "00:00",
+                                label = "Only show between",
+                            )
 
-                        endTimeTextField = timeField(
-                            text = "23:59",
-                            label = "and",
-                        )
+                            endTimeTextField = timeField(
+                                text = "23:59",
+                                label = "and",
+                            )
 
-                    }.bottomGap(BottomGap.NONE)
+                        }.bottomGap(BottomGap.NONE)
 
-                    row {
-                        comment(
-                            """
+                        row {
+                            comment(
+                                """
                             The times are in 24-hour format HH:mm. The default start time is 00:00 and default end time is 23:59.
-                            Not supplying the mm portion will default to 00.
+                            Not supplying the mm portion will default to 0.
                             """.trimIndent()
-                        )
+                            )
+                        }
+                    }
+
+                    group("Appearance") {
+                        row("Image Size:") {
+                            imageSizeTextField = intTextField(range = 1..1000, keyboardStep = 1)
+                                .columns(6)
+                                .gap(RightGap.SMALL)
+                        }.label("pixels")
                     }
 
                     row {

@@ -23,19 +23,22 @@ class ApplicationSettingsConfigurable: Configurable {
         val newDisplayDuration = settingsComponent?.displayDuration
         val newDelayTime = settingsComponent?.delayTime
         val newEnablePokePop = settingsComponent?.enablePokePopValue
-        val newStartTime = settingsComponent?.startTimeText
-        val newEndTime = settingsComponent?.endTimeText
+        val newStartTime = settingsComponent?.startTime
+        val newEndTime = settingsComponent?.endTime
+        val newImageSize = settingsComponent?.imageSize
 
         val isNewUpdate = newDisplayDuration != state.displayDurationInMillis ||
                 newDelayTime != state.delayTimeInMillis ||
                 newEnablePokePop != state.isPokePopEnabled ||
                 newStartTime != state.startTimeInMillis ||
-                newEndTime != state.endTimeInMillis
+                newEndTime != state.endTimeInMillis ||
+                newImageSize != state.imageSizeInPx
 
         return newDisplayDuration != null &&
                 newDelayTime != null &&
                 newStartTime != null &&
                 newEndTime != null &&
+                newImageSize != null &&
                 isNewUpdate
     }
 
@@ -45,8 +48,9 @@ class ApplicationSettingsConfigurable: Configurable {
             settingsComponent?.displayDuration,
             settingsComponent?.delayTime,
             settingsComponent?.enablePokePopValue,
-            startTime = settingsComponent?.startTimeText,
-            endTime = settingsComponent?.endTimeText
+            startTime = settingsComponent?.startTime,
+            endTime = settingsComponent?.endTime,
+            imageSize = settingsComponent?.imageSize
         )
     }
 
@@ -55,8 +59,9 @@ class ApplicationSettingsConfigurable: Configurable {
         settingsComponent?.displayDuration = state.displayDurationInMillis
         settingsComponent?.delayTime = state.delayTimeInMillis
         settingsComponent?.enablePokePopValue = state.isPokePopEnabled
-        settingsComponent?.startTimeText = state.startTimeInMillis
-        settingsComponent?.endTimeText = state.endTimeInMillis
+        settingsComponent?.startTime = state.startTimeInMillis
+        settingsComponent?.endTime = state.endTimeInMillis
+        settingsComponent?.imageSize = state.imageSizeInPx
     }
 
     override fun disposeUIResources() {
