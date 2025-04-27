@@ -23,16 +23,16 @@ object ImageUtil {
         var currentImageWidth = imageIcon.iconWidth
         var currentImageHeight = imageIcon.iconHeight
 
-        if (currentImageWidth > IMAGE_SIZE || currentImageHeight > IMAGE_SIZE) {
+        if (currentImageWidth > DEFAULT_IMAGE_SIZE || currentImageHeight > DEFAULT_IMAGE_SIZE) {
             // maintain aspect ratio
             val ratio = currentImageWidth.toFloat() / currentImageHeight.toFloat()
 
             if (currentImageWidth > currentImageHeight) {
-                currentImageWidth = IMAGE_SIZE
-                currentImageHeight = (IMAGE_SIZE / ratio).toInt()
+                currentImageWidth = DEFAULT_IMAGE_SIZE
+                currentImageHeight = (DEFAULT_IMAGE_SIZE / ratio).toInt()
             } else {
-                currentImageHeight = IMAGE_SIZE
-                currentImageWidth = (IMAGE_SIZE * ratio).toInt()
+                currentImageHeight = DEFAULT_IMAGE_SIZE
+                currentImageWidth = (DEFAULT_IMAGE_SIZE * ratio).toInt()
             }
 
         }
@@ -44,4 +44,4 @@ object ImageUtil {
     }
 }
 
-const val IMAGE_SIZE = 150
+const val DEFAULT_IMAGE_SIZE = 150
