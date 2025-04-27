@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.alaje.intellijplugins"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
   mavenCentral()
@@ -34,13 +34,12 @@ tasks {
 
   withType<BuildSearchableOptionsTask>{
     // disable during development to allow reloading plugin easily to view changes
-    val isInDevMode = System.getenv("IN_DEV").toBooleanStrictOrNull() ?: false
-    enabled = !isInDevMode
+    enabled = false
   }
 
   patchPluginXml {
     sinceBuild.set("241")
-    untilBuild.set("243.*")
+    untilBuild = provider { null}
   }
 
   signPlugin {
