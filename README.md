@@ -21,3 +21,7 @@ You can also check out the [Roadmap](https://github.com/alajemba-vik/Pokepop-Int
 This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
 
 _Enhance your coding journey with PokéPop! 💃🏾_
+
+## 🤗 Acknowledgements
+**Image Credits:** Pokémon animated images sourced from
+<a href="https://www.animatedimages.org/" target="_blank">AnimatedImages.org</a>
