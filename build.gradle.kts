@@ -4,7 +4,7 @@ plugins {
   id("org.jetbrains.intellij.platform") version "2.2.1"
 }
 
-private val versionValue = "1.0.1"
+private val versionValue = "1.0.2"
 
 group = "com.alaje.intellijplugins"
 version = versionValue
