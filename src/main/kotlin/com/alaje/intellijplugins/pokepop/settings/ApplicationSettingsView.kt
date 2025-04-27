@@ -119,7 +119,8 @@ class ApplicationSettingsView {
                     row {
                         comment(
                             """
-                            Settings will be fully applied to the IDE after restarting the IDE or Pokepop.
+                            Restart the IDE or Pokepop to apply any changes. Not doing so will cause inconsistent behavior.
+                            Pokepop can be restarted by clicking Pokepop's ◁ or || button in the status bar.
                             """.trimIndent()
                         )
                     }.bottomGap(BottomGap.SMALL)
